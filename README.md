@@ -1,141 +1,129 @@
-# TeamSync-Student-Team-Compatibility-Classifier-
-Machine learning project that forms compatible student teams using behavioural survey data and clustering techniques.
-
-# Student Team Compatibility Classifier (TeamSync)
-
-## Overview
-
-Student Team Compatibility Classifier (TeamSync) is a Machine Learning project designed to create compatible student teams based on behavioural characteristics rather than random assignment.
-
-The system analyzes survey responses related to work habits, communication preferences, productivity patterns, leadership tendencies, and project goals. Using clustering and classification techniques, it identifies natural student groups and automatically assigns new students to the most suitable team.
+# TeamSync — Student Team Compatibility Classifier
+## Local Deployment Guide
 
 ---
 
-## Problem Statement
+## Project Structure
 
-Traditional team formation methods often ignore behavioural compatibility, resulting in communication issues, leadership conflicts, and uneven workloads.
-
-This project addresses the problem by using Machine Learning to group students based on behavioural similarity, leading to more balanced and effective teams.
-
----
-
-## Features
-
-- Behavioral survey-based student profiling
-- Synthetic dataset generation with realistic noise
-- Data preprocessing and cleaning pipeline
-- K-Means clustering for team discovery
-- KNN classifier for new student assignment
-- Decision Tree classifier for interpretable predictions
-- PCA visualization of clusters
-- Feature importance analysis
-- Cross-validation and model evaluation
-- Cluster heatmap visualization
+```
+student-classifier/
+├── backend/
+│   ├── app.py              ← Flask server + full ML pipeline
+│   └── requirements.txt    ← Python dependencies
+├── frontend/
+│   └── templates/
+│       └── index.html      ← Beautiful single-page UI
+├── start_windows.bat       ← One-click start (Windows)
+├── start_mac_linux.sh      ← One-click start (Mac/Linux)
+└── README.md
+```
 
 ---
 
-## Dataset Features
+## Prerequisites
 
-The system models students using seven behavioural attributes:
-
-| Feature | Description |
-|----------|-------------|
-| Late_Night_Pref | Early Bird vs Night Owl |
-| In_Person_Pref | Remote vs In-Person Collaboration |
-| Stress_Level | Stress Handling Capability |
-| Target_Grade | Academic Ambition |
-| Role_Pref | Leadership Preference |
-| Skill_Diversity | Technical vs Documentation Skills |
-| Pacing | Early Starter vs Procrastinator |
+- **Python 3.8 or newer** — download from https://python.org
+- **pip** — comes bundled with Python
 
 ---
 
-## Machine Learning Pipeline
+##  How to Run Locally
 
-Survey Data
-↓
-Data Cleaning
-↓
-Missing Value Handling
-↓
-Outlier Treatment
-↓
-Feature Scaling
-↓
-K-Means Clustering
-↓
-Cluster Label Assignment
-↓
-KNN & Decision Tree Training
-↓
-Model Evaluation
-↓
-Team Recommendation
+### Option A — One-Click Start Scripts (Easiest)
+
+**Windows:**
+```
+Double-click start_windows.bat
+```
+
+**Mac / Linux:**
+```bash
+chmod +x start_mac_linux.sh
+./start_mac_linux.sh
+```
 
 ---
 
-## Technologies Used
+### Option B — Manual Steps (Any OS)
 
-- Python
-- Pandas
-- NumPy
-- Scikit-Learn
-- Matplotlib
-- Seaborn
-- Jupyter Notebook
+**Step 1: Open a terminal / command prompt**
 
----
+**Step 2: Navigate into the backend folder**
+```bash
+cd student-classifier/backend
+```
 
-## Models Used
+**Step 3: Install dependencies**
+```bash
+pip install -r requirements.txt
+# (or use pip3 on Mac/Linux)
+```
 
-### Unsupervised Learning
-- K-Means Clustering
+**Step 4: Start the Flask server**
+```bash
+python app.py
+# (or use python3 on Mac/Linux)
+```
 
-### Supervised Learning
-- K-Nearest Neighbors (KNN)
-- Decision Tree Classifier
+**Step 5: Open your browser**
+```
+http://localhost:5000
+```
 
-### Dimensionality Reduction
-- Principal Component Analysis (PCA)
-
----
-
-## Evaluation Metrics
-
-- Elbow Method
-- Accuracy Score
-- Confusion Matrix
-- Cross Validation
-- Feature Importance Analysis
-- PCA Visualization
+That's it! The app will:
+1. Train the full ML pipeline (takes ~10–20 seconds)
+2. Print model accuracy in the terminal
+3. Serve the web UI at http://localhost:5000
 
 ---
 
-## Results
+##  What Happens on Startup
 
-- Successfully identified 5 behavioural student groups
-- Achieved over 98% classification accuracy
-- Generated interpretable behavioural clusters
-- Enabled automatic team assignment for new students
-- Identified key factors affecting team compatibility
-
----
-
-## Future Improvements
-
-- Real-world student survey integration
-- Web application deployment
-- Advanced clustering algorithms (GMM, DBSCAN)
-- Personality assessment integration
-- Real-time team recommendation system
+The server automatically:
+- Generates a 5,000-student synthetic dataset
+- Scales features with StandardScaler
+- Finds optimal K using the Elbow Method → runs K-Means (k=5)
+- Finds optimal k for KNN via 5-fold cross-validation
+- Finds optimal depth for Decision Tree via 5-fold cross-validation
+- Trains both models on 70% of data
+- Evaluates on the held-out 30% (accuracy & F1)
 
 ---
 
-## Authors
+## API Endpoints
 
-- Deepak Kumar Meena
+| Method | Endpoint        | Description                    |
+|--------|-----------------|--------------------------------|
+| GET    | `/`             | Serves the web UI              |
+| GET    | `/api/model-info` | Returns trained model stats  |
+| POST   | `/api/predict`  | Predicts cluster for a student |
 
+**POST `/api/predict` — Request body:**
+```json
+{
+  "Late_Night_Pref": 5,
+  "In_Person_Pref": 2,
+  "Stress_Level": 4,
+  "Target_Grade": 5,
+  "Role_Pref": 5,
+  "Skill_Diversity": 3,
+  "Pacing": 5
+}
+```
 
-## License
+---
 
-This project is developed for academic and educational purposes.
+##  To Stop the Server
+
+Press `Ctrl + C` in the terminal.
+
+---
+
+##  Troubleshooting
+
+| Problem | Fix |
+|---------|-----|
+| `ModuleNotFoundError` | Run `pip install -r requirements.txt` again |
+| Port 5000 already in use | Change `port=5000` to `port=5001` in `app.py` and visit `http://localhost:5001` |
+| Browser shows "Cannot connect" | Make sure `python app.py` is still running in the terminal |
+| Mac: "python not found" | Use `python3` instead of `python` |
